@@ -1,0 +1,3 @@
+[console_scripts]
+my_nodepub = my_package.my_nodepub:main
+

@@ -1,0 +1,39 @@
+[0.554s] Invoking command in '/home/user/listener/my_package': PYTHONPATH=/home/user/listener/my_package/build/my_package/prefix_override:/home/user/listener/my_package/install/my_package/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base build/my_package build --build-base /home/user/listener/my_package/build/my_package/build install --record /home/user/listener/my_package/build/my_package/install.log --single-version-externally-managed
+[0.729s] running egg_info
+[0.729s] creating build/my_package/my_package.egg-info
+[0.730s] writing build/my_package/my_package.egg-info/PKG-INFO
+[0.730s] writing dependency_links to build/my_package/my_package.egg-info/dependency_links.txt
+[0.730s] writing entry points to build/my_package/my_package.egg-info/entry_points.txt
+[0.730s] writing requirements to build/my_package/my_package.egg-info/requires.txt
+[0.730s] writing top-level names to build/my_package/my_package.egg-info/top_level.txt
+[0.730s] writing manifest file 'build/my_package/my_package.egg-info/SOURCES.txt'
+[0.731s] reading manifest file 'build/my_package/my_package.egg-info/SOURCES.txt'
+[0.732s] writing manifest file 'build/my_package/my_package.egg-info/SOURCES.txt'
+[0.734s] running build
+[0.734s] running build_py
+[0.734s] creating /home/user/listener/my_package/build/my_package/build
+[0.735s] creating /home/user/listener/my_package/build/my_package/build/lib
+[0.735s] creating /home/user/listener/my_package/build/my_package/build/lib/my_package
+[0.735s] copying my_package/__init__.py -> /home/user/listener/my_package/build/my_package/build/lib/my_package
+[0.735s] copying my_package/my_nodepub.py -> /home/user/listener/my_package/build/my_package/build/lib/my_package
+[0.735s] running install
+[0.735s] /usr/lib/python3/dist-packages/setuptools/command/install.py:34: SetuptoolsDeprecationWarning: setup.py install is deprecated. Use build and pip and other standards-based tools.
+[0.735s]   warnings.warn(
+[0.735s] running install_lib
+[0.736s] creating /home/user/listener/my_package/install/my_package/lib/python3.10/site-packages/my_package
+[0.736s] copying /home/user/listener/my_package/build/my_package/build/lib/my_package/__init__.py -> /home/user/listener/my_package/install/my_package/lib/python3.10/site-packages/my_package
+[0.736s] copying /home/user/listener/my_package/build/my_package/build/lib/my_package/my_nodepub.py -> /home/user/listener/my_package/install/my_package/lib/python3.10/site-packages/my_package
+[0.736s] byte-compiling /home/user/listener/my_package/install/my_package/lib/python3.10/site-packages/my_package/__init__.py to __init__.cpython-310.pyc
+[0.736s] byte-compiling /home/user/listener/my_package/install/my_package/lib/python3.10/site-packages/my_package/my_nodepub.py to my_nodepub.cpython-310.pyc
+[0.736s] running install_data
+[0.737s] creating /home/user/listener/my_package/install/my_package/share/ament_index
+[0.737s] creating /home/user/listener/my_package/install/my_package/share/ament_index/resource_index
+[0.737s] creating /home/user/listener/my_package/install/my_package/share/ament_index/resource_index/packages
+[0.737s] copying resource/my_package -> /home/user/listener/my_package/install/my_package/share/ament_index/resource_index/packages
+[0.737s] copying package.xml -> /home/user/listener/my_package/install/my_package/share/my_package
+[0.737s] running install_egg_info
+[0.738s] Copying build/my_package/my_package.egg-info to /home/user/listener/my_package/install/my_package/lib/python3.10/site-packages/my_package-0.0.0-py3.10.egg-info
+[0.739s] running install_scripts
+[0.753s] Installing my_nodepub script to /home/user/listener/my_package/install/my_package/lib/my_package
+[0.754s] writing list of installed files to '/home/user/listener/my_package/build/my_package/install.log'
+[0.768s] Invoked command in '/home/user/listener/my_package' returned '0': PYTHONPATH=/home/user/listener/my_package/build/my_package/prefix_override:/home/user/listener/my_package/install/my_package/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 setup.py egg_info --egg-base build/my_package build --build-base /home/user/listener/my_package/build/my_package/build install --record /home/user/listener/my_package/build/my_package/install.log --single-version-externally-managed
