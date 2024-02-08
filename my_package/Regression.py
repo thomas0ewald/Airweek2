@@ -4,6 +4,7 @@ from sklearn import model_selection, linear_model
 import pandas as pd
 import re
 import ast
+import pickle
 
 class Regression: 
     def __init__(self, X, Y):
@@ -41,20 +42,32 @@ class Regression:
 
     def train_x(self, x):
         model = linear_model.LinearRegression()
-        print(self._y[0][18])
+        # print(self._y[0][18])
 
-        x_train, x_test,y_train, y_test = model_selection.train_test_split(x, self._y, test_size=0.1)
+        # train for 30 generations
+        best = 0
+        for _ in range(30):
+            x_train, x_test,y_train, y_test = model_selection.train_test_split(x, self._y, test_size=0.1)
 
-        print(x_train)
-        print(y_train)
-        model.fit(x_train, y_train)
-        accuracy = model.score(x_test, y_test)
-        predictions = model.predict(x_test)
+            model.fit(x_train, y_train)
+            accuracy = model.score(x_test, y_test)
+            predictions = model.predict(x_test)
 
-        print(f"score {accuracy}")
+            print(f"score {accuracy}")
 
-        for x in range(len(predictions)):
-            print(f"predicted label: {predictions[x]}, \n attributes: {x_test}, \n actual label: {y_test[x]}")
+            if accuracy > best:
+                best = accuracy
+            # save model in pickle (only for small models, otherwise will take a long time)
+            with open("my-spotify-model.pickle", "wb") as f:
+                pickle.dump(model, f)
+
+        # load from existing model
+        pickle_in = open("my-spotify-model.pickle", "rb")
+        model = pickle.load(pickle_in)
+
+
+        # for x in range(len(predictions)):
+        #     print(f"predicted label: {predictions[x]}, \n attributes: {x_test}, \n actual label: {y_test[x]}")
 
         # Coefficients und Intercept ausgeben
         print("Steigung (slope):", model.coef_[0])
