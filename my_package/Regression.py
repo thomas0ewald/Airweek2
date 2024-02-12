@@ -5,51 +5,26 @@ import pandas as pd
 import re
 import ast
 import pickle
+import pandas as pd
 
 class Regression: 
-    def __init__(self, X, Y):
-        self._x = X
-        self._y = Y
-
-    def train(self):
-        # print(self.X)
-        # x_axis_keypoints = self.X[:,:,0]
-        # print(x_axis_keypoints[:3])
-        print("------------------------------")
-        # x_axis_distance = self.Y[:,0]
-        # print(x_axis_distance[:3])
-
-        #Linear Regression Modell initialisieren und anpassen
-        # model = LinearRegression()
-
-        # Umwandeln der verschachtelten Liste in ein NumPy-Array
-        # array = np.array(self._x)
-        # print(self._x)
-        # test = np.array(self._x)
-        # test2 = np.array(self._y)
-        # print(array)
-        # print(test2)
-        # model.fit(test, test2)
-
-        # # Vorhersagen treffen
-        # # X_new = np.array([[6]])
-        # prediction = model.predict(self._x)
-        # print("Vorhersage für X_new:", prediction)
-
-        # # Coefficients und Intercept ausgeben
-        # print("Steigung (slope):", model.coef_[0])
-        # print("Achsenabschnitt (intercept):", model.intercept_)
-
-    def train_x(self, x):
+    """ Model for prediction of Distance based on detected people keypoints"""
+    def __init__(self, x, y):
+        self._x = x
+        self._y = y
+    
+    def train(self, x):
+        """ Predict the distance (y) based on the keypoints (x)"""
         model = linear_model.LinearRegression()
-        # print(self._y[0][18])
 
         # train for 30 generations
         best = 0
         for _ in range(30):
-            x_train, x_test,y_train, y_test = model_selection.train_test_split(x, self._y, test_size=0.1)
+            x_train, x_test,y_train, y_test = model_selection.train_test_split(self._x, self._y, test_size=0.1)
 
+            # train the model
             model.fit(x_train, y_train)
+            # get accuracy with the actual measurements
             accuracy = model.score(x_test, y_test)
             predictions = model.predict(x_test)
 
@@ -57,12 +32,12 @@ class Regression:
 
             if accuracy > best:
                 best = accuracy
-            # save model in pickle (only for small models, otherwise will take a long time)
-            with open("my-spotify-model.pickle", "wb") as f:
+            # save model in pickle file
+            with open("distance_predictions.pickle", "wb") as f:
                 pickle.dump(model, f)
 
         # load from existing model
-        pickle_in = open("my-spotify-model.pickle", "rb")
+        pickle_in = open("distance_predictions.pickle", "rb")
         model = pickle.load(pickle_in)
 
 
@@ -72,45 +47,32 @@ class Regression:
         # Coefficients und Intercept ausgeben
         print("Steigung (slope):", model.coef_[0])
         print("Achsenabschnitt (intercept):", model.intercept_)
-        
-    
-    def predict_x(self, x):
-        model = linear_model.LinearRegression()
-
-        x_train, x_test,y_train, y_test = model_selection.train_test_split(x, self._y, test_size=0.1)
-        print(y_train)
-
-        model.fit(y_train, x_train)
-        accuracy = model.score(y_test, x_test)
-        predictions = model.predict(y_test)
-
-        for x in range(len(predictions)):
-            print(f"predicted label: {predictions[x]}, \n attributes: {y_test[x]}, \n actual label: {x_test[x]}")
-
-        # Coefficients und Intercept ausgeben
-        print("Steigung (slope):", model.coef_[0])
-        print("Achsenabschnitt (intercept):", model.intercept_)
-        print(f"score {accuracy}")
 
 
 #-----
 def transform_distance_and_intensity(data):
+    """ Prepare data for training
+        Data from sensors is passed as string: [[8.  9.  7.  ], [0.  7.  1.]]
+        and is converted to valid numpy arrays containing floats: [[8,  9,  7], [0,  7,  1]]"""
+
+    # replace points with comma: 8.  9.  7.  with 8, 9, 7
     regex_pattern = r'(?<=\d)\s+(?=\d)'
-    ret = [[re.sub(regex_pattern, ', ', line) for line in data]]
+    string_with_commas = [[re.sub(regex_pattern, ', ', line) for line in data]]
 
     regex_pattern_replace_zeros = r'(\d\.\s+)'
-    cret = [[re.sub(regex_pattern_replace_zeros, r'\1, ', number) for line in ret for number in line]]
+    cret = [[re.sub(regex_pattern_replace_zeros, r'\1, ', number) for line in string_with_commas for number in line]]
 
-    bigass_list = []
+    converted_distance_intensity_list = []
 
     for all in cret:
         for line in all:
+            # get only the numbers from huge sensor string
             numbers_str_list = line.strip('[]').split(', ')
-            # tmp = [print(number) for number in numbers_str_list]
+            # convert to float
             numbers_float_list = [float(number) for number in numbers_str_list if number != '' ]
-            bigass_list.append(numbers_float_list)
+            converted_distance_intensity_list.append(numbers_float_list)
 
-    return bigass_list
+    return converted_distance_intensity_list
 
 def convert_to_float(lst):
     for i, val in enumerate(lst):
@@ -125,31 +87,20 @@ def transform_keypoints(data):
     ret = [[re.sub(regex_pattern, ', ', line) for line in data]]
     ccret = [[re.sub(r'\]\s+\[', '], [', tmp) for all in ret for tmp in all]]
 
-    bigass_list = []
+    converted_keypoints_list = []
 
     for all in ccret:
         for line in all:
                 nested_list = ast.literal_eval(line)
-                bigass_list.append(convert_to_float(nested_list))
+                converted_keypoints_list.append(convert_to_float(nested_list))
 
-                # numbers_str_list = line.split('], ')
-                # numbers_float_list = [float(number) for number in numbers_str_list]
-                # bigass_list.append(numbers_float_list)
-
-    return bigass_list
-
-# def transform_keypoints(data):
+    return converted_keypoints_list
 
 
 
-
-#read train data from file
+# read recorded data form saved .csv file
 csv_file_path = 'data.csv'
-
-# Lesen der CSV-Datei
 df = pd.read_csv(csv_file_path)
-# df['Distance'] = df['Distance'].astype(float)
-
 
 df.replace(to_replace='\n', value='', regex=True, inplace=True)
 
@@ -157,39 +108,47 @@ distances = transform_distance_and_intensity(df.Distance)
 intensities = transform_distance_and_intensity(df.Intensity)
 keypoints = transform_keypoints(df.Keypoint)
 
-# print(keypoints[0][0][0][0])
 keypoints_train_x = []
 keypoints_train_y = []
 keypoints_train_z = []
 
-for all in keypoints:
-    for not_all in all:
-        for even_less in not_all:
-            keypoints_train_x.append(even_less[0])
-            keypoints_train_y.append(even_less[1])
-            keypoints_train_z.append(even_less[2])
 
+# return value from Keypoints:
+# "[[[1.18184509e+02 1.08358841e+02 6.85976148e-02]
+#   [...            ...             ...          ]
+#   [1.14462128e+02 1.31671341e+02 3.28823403e-02]]
 
+#  [[4.24308136e+02 1.15316460e+02 3.49054188e-02]
+#   [4.23627899e+02 1.16665146e+02 4.47378010e-02]
+#   [...            ...             ...          ]
+#   [4.19546295e+02 1.29140427e+02 1.25035867e-02]]
 
-# importing pandas as pd 
-import pandas as pd
-  
+for keypoints in all:
+    for keypoint in keypoints:
+        for xyz in keypoint:
+            keypoints_train_x.append(xyz[0])
+            keypoints_train_y.append(xyz[1])
+            keypoints_train_z.append(xyz[2])
+
 
 
 # loop through distances - ESTIMATION: every 20 distance measurements belong to a keypoint
-splitted_distances = []
+def get_measured_sensor_distance_for_keypoints():
+    splitted_distances = []
 
-for element in distances:
-    print(len(element))
-    for i in range(0, len(element), 20):
-        if i == 0:
-            splitted_distances.append(np.array(element[:i]))
-        else:
-            splitted_distances.append(np.array(element[i-20:i]))
+    for element in distances:
+        print(len(element))
+        for i in range(0, len(element), 20):
+            if i == 0:
+                splitted_distances.append(np.array(element[:i]))
+            else:
+                splitted_distances.append(np.array(element[i-20:i]))
 
-    print('----------------')
+    return splitted_distances
+    # print(len(splitted_distances))
 
-print(len(splitted_distances))
+
+splitted_distances = get_measured_sensor_distance_for_keypoints()
 
 # get non empty arrays
 non_empty_arrays = [arr for arr in splitted_distances if len(arr) > 0]
@@ -209,30 +168,5 @@ print(df.head(5))
 
 
 regression_train = Regression(keypoints[:len(non_empty_arrays)], non_empty_arrays)
-regression_train.train_x(df[:len(non_empty_arrays)])
-
-
-
-
-# df.replace(to_replace='  ', value=',', regex=True, inplace=True)
-
-
-# print(df.head())
-
-
-
-
-
-# print([[line for line in ret]])
-
-
-# # Ersetzen des gefundenen Musters durch "0.," also "0." gefolgt von einem Komma
-
-
-
-# print([[line for line in df.Distance]])
-
-# Ausgabe des modifizierten Strings
-# print(cret[0][0])
-
+regression_train.train(df[:len(non_empty_arrays)])
 
